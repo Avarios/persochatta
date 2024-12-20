@@ -1,0 +1,20 @@
+version: '3'
+services:
+  persochatta_backend:
+    build:
+      context: ./backend/express
+      dockerfile: dockerfile
+    image: persochatta:latest
+    environment:
+      - AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=YOUR_SECRET
+      - AWS_REGION=YOUR_REGION
+    ports:
+      - 5000:5000
+  persochatta_frontend:
+    build:
+      context: ./client/svelte
+      dockerfile: dockerfile
+    image: persochatta_fe:latest
+    ports:
+      - 3000:3000
