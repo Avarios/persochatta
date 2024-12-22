@@ -7,7 +7,7 @@ export const config = {
 
 export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 	const { prompt, modelId } = (await request.json()) as { prompt: string; modelId: number };
-	
+	console.log(`Calling baseurl with : ${env.PRIVATE_BACKEND_URL}`);
 	const response = await fetch(`${env.PRIVATE_BACKEND_URL}/api/v1/invoke`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },

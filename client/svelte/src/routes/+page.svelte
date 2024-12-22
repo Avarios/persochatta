@@ -57,6 +57,7 @@
 			try {
 				const response = await fetch('/api/chat/', {
 					method: 'POST',
+					credentials: 'same-origin',
 					body: JSON.stringify({ prompt: messageInput, modelId: selectedItem.id })
 				});
 				const reader = response?.body?.getReader();
