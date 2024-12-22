@@ -39,7 +39,7 @@ jobs:
           context: ./backend/express
           file: ./backend/express/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/backend:latest
+          tags: ${{ env.REGISTRY }}/avarios/persochatta_backend:latest
 
       - name: Build and push Frontend
         uses: docker/build-push-action@v4
@@ -47,4 +47,4 @@ jobs:
           context: ./client/svelte
           file: ./client/svelte/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/frontend:latest
+          tags: ${{ env.REGISTRY }}/avarios/persochatta_frontend:latest
