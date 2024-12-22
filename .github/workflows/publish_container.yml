@@ -48,3 +48,15 @@ jobs:
           file: ./client/svelte/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/avarios/persochatta_frontend:latest
+  print-urls:
+   needs: build-and-push
+   runs-on: ubuntu-latest
+   steps:
+      - name: Print Container URLs
+        run: |
+          echo "✨ Container images have been published to:"
+          echo "📦 Backend: ${{ env.REGISTRY }}/avarios/persochatta_backend:latest"
+          echo "📦 Frontend: ${{ env.REGISTRY }}/avarios/persochatta_frontend:latest"
+          echo "You can pull these images using:"
+          echo "docker pull ${{ env.REGISTRY }}/avarios/persochatta_backend:latest"
+          echo "docker pull ${{ env.REGISTRY }}/avarios/persochatta_frontend:latest"
