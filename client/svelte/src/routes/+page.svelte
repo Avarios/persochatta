@@ -55,7 +55,7 @@
 			isStreaming = true;
 
 			try {
-				const response = await fetch('/api/chat', {
+				const response = await fetch('/api/chat/', {
 					method: 'POST',
 					body: JSON.stringify({ prompt: messageInput, modelId: selectedItem.id })
 				});

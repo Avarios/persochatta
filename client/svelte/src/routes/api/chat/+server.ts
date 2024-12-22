@@ -1,10 +1,14 @@
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+
+export const config = {
+    csrf: false 
+};
 
 export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 	const { prompt, modelId } = (await request.json()) as { prompt: string; modelId: number };
-	console.log(prompt,modelId);
 	
-	const response = await fetch('http://localhost:5000/api/v1/invoke', {
+	const response = await fetch(`${env.PRIVATE_BACKEND_URL}/api/v1/invoke`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ prompt, modelId })
@@ -36,7 +40,3 @@ export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 		}
 	});
 };
-
-
-
-
