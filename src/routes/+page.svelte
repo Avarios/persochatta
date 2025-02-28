@@ -13,8 +13,7 @@
 
 	async function sendMessage() {
 		if (!newMessage.trim()) return;
-		
-		// Add user message
+	
 		const userMessage = {
 			role: 'user',
 			content: newMessage,
@@ -24,12 +23,10 @@
 		const userInput = newMessage;
 		newMessage = '';
 		
-		// Show loading indicator
 		loading = true;
 		streamingMessage = '';
 		
 		try {
-			// Call Amazon Bedrock API with streaming
 			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -49,7 +46,6 @@
 			}
 			const decoder = new TextDecoder();
 			
-			// Start receiving chunks
 			while (true) {
 				const { done, value } = await reader.read();
 				
@@ -57,17 +53,14 @@
 					break;
 				}
 				
-				// Decode the chunk and append to streaming message
 				const chunk = decoder.decode(value);
 				streamingMessage += chunk;
-				
-				// Scroll to bottom
+
 				if (chatContainer) {
 					chatContainer.scrollTop = chatContainer.scrollHeight;
 				}
 			}
-			
-			// Add the complete response to messages
+
 			messages = [...messages, {
 				role: 'assistant',
 				content: streamingMessage,
@@ -76,7 +69,7 @@
 			
 		} catch (error) {
 			console.error('Error calling AI service:', error);
-			// Add error message
+
 			messages = [...messages, {
 				role: 'system',
 				content: 'Sorry, there was an error processing your request.',
@@ -114,7 +107,6 @@
 	<Header />
 	
     <main class="flex-1 overflow-hidden flex flex-col max-w-6xl mx-auto w-full">
-		<!-- Chat container -->
 		<div 
 			bind:this={chatContainer} 
 			class="flex-1 overflow-y-auto py-4 px-6"
@@ -134,10 +126,8 @@
 						</div>
 					</div>
 					
-					<!-- Message content with chat bubble -->
 					<div class="pl-11">
 						<div class="{message.role === 'user' ? 'bg-blue-50 border-blue-100' : 'bg-purple-50 border-purple-100'} border rounded-lg p-4 shadow-sm">
-							<!-- Custom styling for code blocks -->
 							<div class="prose prose-blue max-w-none">
 								{@html formatMessage(message.content)}
 							</div>
@@ -146,7 +136,7 @@
 				</div>
 			{/each}
 			
-			<!-- Streaming message display -->
+
 			{#if loading && streamingMessage}
 				<div class="mb-6">
 					<div class="flex items-center mb-2">
@@ -167,7 +157,6 @@
 					</div>
 				</div>
 			{:else if loading}
-				<!-- Loading indicator when no content is streaming yet -->
 				<div class="mb-6">
 					<div class="flex items-center mb-2">
 						<div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3 flex-shrink-0">
@@ -188,7 +177,6 @@
 			{/if}
 		</div>
 		
-		<!-- Input area -->
 		<div class="border-t border-gray-200 bg-white p-4 sticky bottom-0">
 			<div class="max-w-4xl mx-auto">
 				<form on:submit|preventDefault={sendMessage} class="relative">
@@ -203,6 +191,7 @@
 						type="submit" 
 						class="absolute bottom-3 right-3 bg-purple-600 text-white rounded-full p-2 hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 						disabled={loading || !newMessage.trim()}
+						aria-label="Send message"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
 							<path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
@@ -218,7 +207,6 @@
 </div>
 
 <style>
-	/* Enhanced code block styling */
 	:global(.code-block) {
 		margin: 1.5em 0;
 		border-radius: 0.5rem;
@@ -266,50 +254,40 @@
 		font-size: 0.9em;
 		line-height: 1.6;
 	}
-	
-	/* Keyword highlighting */
+
 	:global(.hljs-keyword),
 	:global(.hljs-tag) {
 		color: #c678dd;
 	}
-	
-	/* String highlighting */
+
 	:global(.hljs-string) {
 		color: #98c379;
 	}
 	
-	/* Number highlighting */
 	:global(.hljs-number) {
 		color: #d19a66;
 	}
 	
-	/* Comment highlighting */
 	:global(.hljs-comment) {
 		color: #7f848e;
 		font-style: italic;
 	}
 	
-	/* Function highlighting */
 	:global(.hljs-function),
 	:global(.hljs-title.function_) {
 		color: #61afef;
 	}
 	
-	/* Variable highlighting */
 	:global(.hljs-variable),
 	:global(.hljs-attr) {
 		color: #e06c75;
 	}
 	
-	/* Operator highlighting */
 	:global(.hljs-operator) {
 		color: #56b6c2;
 	}
 	
-	/* Class highlighting */
 	:global(.hljs-title.class_) {
 		color: #e5c07b;
 	}
-	
-	/* Line highlighting and line numbers can be added for more complexity */
 </style>

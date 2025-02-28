@@ -9,8 +9,6 @@ import type { RequestHandler } from './$types';
 
 const POST: RequestHandler = async ({ request }) => {
 	const { message, previousMessages } = await request.json();
-
-	// Initialize the Bedrock client
 	const bedrockClient = new BedrockRuntimeClient({
 		region: AWS_DEFAULT_REGION,
 		credentials: {
@@ -19,19 +17,17 @@ const POST: RequestHandler = async ({ request }) => {
 		}
 	});
 
-	// Format the messages for the model
 	const formattedMessages = previousMessages.map((msg: { role: any; content: any }) => ({
 		role: msg.role,
 		content: msg.content
 	}));
 
-	// Add the new message
 	formattedMessages.push({
 		role: 'user',
 		content: message
 	});
 
-	// Create the request payload
+    ///TODO: Change the modelId to the one you want to use
 	const payload = {
 		modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
 		contentType: 'application/json',
@@ -45,15 +41,11 @@ const POST: RequestHandler = async ({ request }) => {
 	};
 
 	try {
-		// Create a ReadableStream
 		const stream = new ReadableStream({
 			async start(controller) {
 				try {
-					// Invoke the model with streaming
 					const command = new InvokeModelWithResponseStreamCommand(payload);
 					const response = await bedrockClient.send(command);
-
-					// Process each chunk
 					if (!response.body) {
 						throw new Error('Response body is undefined');
 					}
@@ -62,7 +54,6 @@ const POST: RequestHandler = async ({ request }) => {
 							const decodedChunk = JSON.parse(new TextDecoder().decode(chunk.chunk.bytes));
 
 							if (decodedChunk.type === 'content_block_delta' && decodedChunk.delta?.text) {
-								// Send the text chunk
 								controller.enqueue(decodedChunk.delta.text);
 							}
 						}
@@ -76,7 +67,6 @@ const POST: RequestHandler = async ({ request }) => {
 			}
 		});
 
-		// Return the stream as response
 		return new Response(stream, {
 			headers: {
 				'Content-Type': 'text/event-stream',
