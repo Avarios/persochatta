@@ -3,7 +3,8 @@ import hljs from 'highlight.js';
 
 const renderer = new marked.Renderer();
 renderer.code = ({ text, lang }) => {
-	const validLanguage = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+	const validLanguage = lang !== "svelte" ?  lang && hljs.getLanguage(lang) ? lang : 'plaintext' : "html";
+
 	const highlightedCode = hljs.highlight(text, { language: validLanguage }).value;
 
 	return `<div class="code-block">
