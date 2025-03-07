@@ -6,9 +6,10 @@ import {
 } from '@aws-sdk/client-bedrock-runtime';
 import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION } from '$env/static/private';
 import type { RequestHandler } from './$types';
+import type { ChatRequest } from '$lib/models';
 
 const POST: RequestHandler = async ({ request }) => {
-	const { message, previousMessages } = await request.json();
+	const { message, previousMessages, model } = await request.json() as ChatRequest;
 	const bedrockClient = new BedrockRuntimeClient({
 		region: AWS_DEFAULT_REGION,
 		credentials: {
@@ -29,7 +30,7 @@ const POST: RequestHandler = async ({ request }) => {
 
     ///TODO: Change the modelId to the one you want to use
 	const payload = {
-		modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+		modelId: model.awsName,
 		contentType: 'application/json',
 		accept: 'application/json',
 		body: JSON.stringify({

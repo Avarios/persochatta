@@ -2,15 +2,15 @@
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import { marked } from '$lib/renderer';
-	import { llms } from '$lib/models';
+	import { llms,type ChatMessage,type ChatRequest,type LLM } from '$lib/models';
 
-	let messages: Array<{ role: string; content: string; timestamp: Date }> = $state([]);
+	let messages: Array<ChatMessage> = $state([]);
 	let newMessage = $state('');
 	let loading = $state(false);
 	let chatContainer: HTMLDivElement | null = null;
 	let streamingMessage = $state('');
 	let openLLMMenu = $state(true);
-	let chosenLLM = $state('');
+	let chosenLLM: LLM | undefined = $state(undefined);
 
 	async function sendMessage() {
 		if (!newMessage.trim()) return;
@@ -33,8 +33,9 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					message: userInput,
-					previousMessages: messages.filter((m) => m.role !== 'system')
-				})
+					previousMessages: messages.filter((m) => m.role !== 'system'),
+					model: chosenLLM
+				} as ChatRequest)
 			});
 
 			if (!response.ok) {
@@ -118,7 +119,7 @@
 				class="inline-flex items-center rounded-lg bg-purple-400 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
 				type="button"
 			>
-				{chosenLLM ? chosenLLM : "Choose LLM"} 
+				{chosenLLM ? chosenLLM.display : "Choose LLM"} 
 				<svg
 					class="ms-3 h-2.5 w-2.5"
 					aria-hidden="true"
@@ -155,7 +156,7 @@
 								}}
 								class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full"
 							>
-								{llm}
+								{llm.display}
 							</button>
 						</li>
 					{/each}
@@ -257,7 +258,7 @@
 					<button
 						type="submit"
 						class="absolute bottom-3 right-3 rounded-full bg-purple-600 p-2 text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
-						disabled={loading || !newMessage.trim()}
+						disabled={(loading || !newMessage.trim()) && chosenLLM !== null }
 						aria-label="Send message"
 					>
 						<svg
